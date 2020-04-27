@@ -247,7 +247,7 @@ jobs:
 
   build_flowdb_oracle:
     machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
-      image: circleci/classic:201808-01
+      image: ubuntu-1604:201903-01
     environment: *flowdb_env
     working_directory: /home/circleci/project
     steps:
@@ -258,6 +258,11 @@ jobs:
           command: |
             pyenv versions
             pyenv global 3.7.0
+      - run:
+          name: Upgrade docker
+          command: |
+            sudo apt update
+            sudo apt install docker-ce
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
@@ -293,14 +298,17 @@ jobs:
           when: on_fail
 
   build_flowdb_testdata:
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      - image: ubuntu-1604:201903-01
     working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker:
-          version: 18.09.3
+      - run:
+          name: Upgrade docker
+          command: |
+            sudo apt update
+            sudo apt install docker-ce
       - attach_workspace:
           at: /home/circleci/
       - run:
@@ -318,14 +326,17 @@ jobs:
             docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
 
   build_flowdb_synthdata:
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      - image: ubuntu-1604:201903-01
     working_directory: /home/circleci/project
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker:
-          version: 18.09.3
+      - run:
+          name: Upgrade docker
+          command: |
+            sudo apt update
+            sudo apt install docker-ce
       - attach_workspace:
           at: /home/circleci/
       - run:
